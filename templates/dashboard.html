@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 2rem;
+        }
+        h2 {
+            margin-bottom: 0.5rem;
+        }
+        a.logout {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: #d00;
+            text-decoration: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f9fafb;
+        }
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+        .export-btn {
+            display: inline-block;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #4caf50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .export-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Welcome, {{ user.name }}</h2>
+    <a class="logout" href="{{ url_for('logout') }}">Logout</a>
+
+    <a href="{{ url_for('export_predictions') }}" class="export-btn">⬇️ Export as CSV</a>
+
+    <label for="classFilter">Filter by Prediction Class:</label>
+    <select id="classFilter" onchange="filterTable()">
+        <option value="">All</option>
+        {% for row in predictions|map(attribute='predicted_class')|unique %}
+            <option value="{{ row }}">{{ row }}</option>
+        {% endfor %}
+    </select>
+
+    <h3>Your Prediction History</h3>
+    {% if predictions %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Predicted Class</th>
+                <th>Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for row in predictions %}
+            <tr>
+                <td>{{ row.id }}</td>
+                <td>{{ row.predicted_class }}</td>
+                <td>{{ row.created_at }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>You have no predictions yet.</p>
+    {% endif %}
+
+    <h3>Prediction Summary (Chart)</h3>
+    <canvas id="predictionChart" width="400" height="200"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        const ctx = document.getElementById('predictionChart').getContext('2d');
+        const predictionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Class A', 'Class B', 'Class C'], // Replace with actual class names
+                datasets: [{
+                    label: 'Number of Predictions',
+                    data: [12, 19, 7], // Replace with actual data
+                    backgroundColor: [
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Prediction Summary'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+    function filterTable() {
+        const selected = document.getElementById('classFilter').value;
+        const rows = document.querySelectorAll("table tbody tr");
+
+        rows.forEach(row => {
+            const predClass = row.children[1].textContent.trim();
+            if (!selected || predClass === selected) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+    </script>
+</body>
+</html>

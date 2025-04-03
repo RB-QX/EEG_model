@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 2rem;
+        }
+        h2 {
+            margin-bottom: 1rem;
+        }
+        section {
+            margin-bottom: 2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background-color: #f9fafb;
+        }
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+    </style>
+</head>
+<body>
+    <h2>🔒 Admin Dashboard</h2>
+
+    <section>
+        <h3>Registered Users</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section>
+        <h3>All Predictions</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Email</th>
+                    <th>Class</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for p in predictions %}
+                <tr>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.user_email }}</td>
+                    <td>{{ p.predicted_class }}</td>
+                    <td>{{ p.created_at }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</body>
+</html>

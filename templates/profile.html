@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>User Profile</h1>
+        <div class="profile-card">
+            {% if user.picture %}
+            <img src="{{ user.picture }}" alt="Profile Picture" class="profile-picture">
+            {% endif %}
+            <h2>{{ user.name }}</h2>
+            <p class="email">{{ user.email }}</p>
+            {% if user.bio %}
+            <div class="bio">
+                <h3>Bio</h3>
+                <p>{{ user.bio }}</p>
+            </div>
+            {% endif %}
+            <div class="actions">
+                <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">Edit Profile</a>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        img {
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            margin-bottom: 1rem;
+        }
+        h2, p {
+            margin: 0.5rem 0;
+        }
+        a {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #0d6efd;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% if user.picture %}
+            <img src="{{ user.picture }}" alt="Profile Picture">
+        {% endif %}
+        <h2>{{ user.name }}</h2>
+        <p>{{ user.email }}</p>
+        <a href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+        <a href="{{ url_for('profile') }}">Profile</a>
+    </div>
+</body>
+</html>

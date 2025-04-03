@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EEG Prediction Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='../static/css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>EEG Analysis</h2>
+                <div class="user-profile">
+                    {% if session.get('user') %}
+                        <div class="avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="user-info">
+                            <h3>{{ session['user']['name'] }}</h3>
+                            <p>{{ session['user']['email'] }}</p>
+                        </div>
+                        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    {% endif %}
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-brain"></i> EEG Input</a></li>
+                    <li><a href="#"><i class="fas fa-chart-line"></i> Analysis</a></li>
+                    <li><a href="#"><i class="fas fa-history"></i> History</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <p>© 2025 EEG Analyzer</p>
+                <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </aside>
+        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <div class="top-actions">
+                    <button class="btn btn-outline">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="btn btn-outline"><i class="fas fa-envelope"></i><span class="notification-badge">5</span></button>
+                    <button class="btn btn-primary"><i class="fas fa-plus"></i> New Analysis</button>
+                    <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+                    {% if session.get('user') %}
+                        <span class="welcome-msg">Welcome, {{ session['user']['name'] }}</span>
+                        <a href="{{ url_for('logout') }}" class="login-btn">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="login-btn">Login</a>
+                    {% endif %}
+                </div>
+                <button class="sidebar-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </header>
+
+            <div class="dashboard-overview">
+                <h1>EEG Prediction Dashboard</h1>
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-brain"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Analyses</h3>
+                            <p>0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Success Rate</h3>
+                            <p>0%</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-stopwatch"></i></div>
+                        <div class="stat-info">
+                            <h3>Avg. Processing</h3>
+                            <p>0s</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-chart-pie"></i></div>
+                        <div class="stat-info">
+                            <h3>Confidence</h3>
+                            <p>0%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-sections">
+                    <!-- Data Input Section -->
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-brain"></i> EEG Data Input</h2>
+                            <div class="section-actions">
+                                <button class="btn btn-outline btn-sm"><i class="fas fa-file-import"></i> Import</button>
+                                <button class="btn btn-outline btn-sm"><i class="fas fa-sync"></i> Reset</button>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <form id="eegForm" class="multi-step-form">
+                                <div class="step active" data-step="1">
+                                    {% for i in range(18) %}
+                                        <div class="form-group">
+                                            <label for="feature{{ i }}">F{{ i }}</label>
+                                            <input type="number" step="any" id="feature{{ i }}" name="feature{{ i }}" placeholder="0.00" required>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="step" data-step="2">
+                                    {% for i in range(18, 36) %}
+                                        <div class="form-group">
+                                            <label for="feature{{ i }}">F{{ i }}</label>
+                                            <input type="number" step="any" id="feature{{ i }}" name="feature{{ i }}" placeholder="0.00" required>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="step" data-step="3">
+                                    {% for i in range(36, 54) %}
+                                        <div class="form-group">
+                                            <label for="feature{{ i }}">F{{ i }}</label>
+                                            <input type="number" step="any" id="feature{{ i }}" name="feature{{ i }}" placeholder="0.00" required>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="step-buttons">
+                                    <button type="button" class="btn btn-outline" id="prevStep">Back</button>
+                                    <button type="button" class="btn btn-primary" id="nextStep">Next</button>
+                                    <button type="submit" class="btn btn-primary" id="submitForm" style="display:none;">Predict</button>
+                                </div>
+                                <div class="step-indicator">
+                                    <div class="dot active"></div>
+                                    <div class="dot"></div>
+                                    <div class="dot"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <!-- Results Section -->
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-chart-bar"></i> Analysis Results</h2>
+                            <div class="section-actions">
+                                <button class="btn btn-outline btn-sm"><i class="fas fa-download"></i> Export</button>
+                                <button class="btn btn-outline btn-sm"><i class="fas fa-share"></i> Share</button>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div id="result" class="result-container">
+                                <div class="no-result">
+                                    <i class="fas fa-brain"></i>
+                                    <p>Submit EEG data to see prediction results</p>
+                                </div>
+                                <!-- Results will be populated here -->
+                            </div>
+                            <div class="visualization-tabs">
+                                <div class="tabs">
+                                    <button class="tab-btn active" data-tab="prediction">Prediction</button>
+                                    <button class="tab-btn" data-tab="features">Feature Importance</button>
+                                    <button class="tab-btn" data-tab="comparison">Comparison</button>
+                                </div>
+                                <div class="tab-content">
+                                    <div id="prediction-tab" class="tab-pane active">
+                                        <div class="chart-container">
+                                            <canvas id="predictionChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div id="features-tab" class="tab-pane">
+                                        <div class="chart-container">
+                                            <canvas id="featuresChart"></canvas>
+                                        </div>
+                                    </div>
+                                    <div id="comparison-tab" class="tab-pane">
+                                        <div class="chart-container">
+                                            <canvas id="comparisonChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Recent Activity Section -->
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                            <div class="section-actions">
+                                <button class="btn btn-outline btn-sm"><i class="fas fa-filter"></i> Filter</button>
+                                <button class="btn btn-link btn-sm">View All</button>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon success"><i class="fas fa-check"></i></div>
+                                    <div class="activity-details">
+                                        <h4>Prediction Completed</h4>
+                                        <p>EEG analysis successful with 95% confidence</p>
+                                        <span class="activity-time">Today, 10:23 AM</span>
+                                    </div>
+                                    <div class="activity-actions">
+                                        <button class="btn btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon info"><i class="fas fa-file-import"></i></div>
+                                    <div class="activity-details">
+                                        <h4>Data Imported</h4>
+                                        <p>Imported 32 EEG samples from research-data.csv</p>
+                                        <span class="activity-time">Yesterday, 3:45 PM</span>
+                                    </div>
+                                    <div class="activity-actions">
+                                        <button class="btn btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon warning"><i class="fas fa-exclamation"></i></div>
+                                    <div class="activity-details">
+                                        <h4>Model Updated</h4>
+                                        <p>The prediction model was updated to version 2.3</p>
+                                        <span class="activity-time">Mar 28, 2025, 9:12 AM</span>
+                                    </div>
+                                    <div class="activity-actions">
+                                        <button class="btn btn-icon"><i class="fas fa-ellipsis-v"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script src="{{ url_for('static', filename='../static/js/script.js') }}"></script>
+</body>
+</html>

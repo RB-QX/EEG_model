@@ -1,0 +1,88 @@
+/* Reset some default browser styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body styling */
+  body {
+    background-color: #f4f6f8; /* Subtle gray background */
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+  }
+  
+  /* A container to center the login form vertically & horizontally */
+  .login-container {
+    min-height: 100vh; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    padding: 20px;
+  }
+  
+  /* The box holding the form & heading */
+  .login-box {
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    text-align: center;
+  }
+  
+  /* Main heading */
+  .login-box h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #444;
+  }
+  
+  /* The Google sign in button container, if you want to style it more */
+  form {
+    margin-bottom: 1rem;
+  }
+  
+  /* Button styling – a modern look */
+  form button {
+    background-color: #fff;
+    border: 2px solid #ccc;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  form button:hover {
+    background-color: #f0f0f0;
+    border-color: #bbb;
+  }
+  
+  /* The Google icon in the button */
+  form button img {
+    height: 20px;
+  }
+  
+  /* Text below the form */
+  .login-box p {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #666;
+  }
+  
+  /* Link styling */
+  .login-box a {
+    color: #007BFF;
+    text-decoration: none;
+  }
+  
+  .login-box a:hover {
+    text-decoration: underline;
+  }
+  
