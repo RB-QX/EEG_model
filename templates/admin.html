@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="/static/js/main.js" defer></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,54 +40,8 @@
     </style>
 </head>
 <body>
-    <h2>🔒 Admin Dashboard</h2>
-
-    <section>
-        <h3>Registered Users</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for user in users %}
-                <tr>
-                    <td>{{ user.id }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.role }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </section>
-
-    <section>
-        <h3>All Predictions</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>User Email</th>
-                    <th>Class</th>
-                    <th>Created At</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for p in predictions %}
-                <tr>
-                    <td>{{ p.id }}</td>
-                    <td>{{ p.user_email }}</td>
-                    <td>{{ p.predicted_class }}</td>
-                    <td>{{ p.created_at }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </section>
+    <div id="app">
+        <admin-dashboard :users="users" :predictions="predictions"></admin-dashboard>
+    </div>
 </body>
 </html>
