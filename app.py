@@ -28,8 +28,7 @@ app.config.update(
     SESSION_FILE_DIR='./.flask_session/',
     SESSION_COOKIE_NAME='eeg_session',
     SESSION_COOKIE_SAMESITE='Lax',
-    SESSION_COOKIE_SECURE=True,  # ngrok uses HTTPS
-    SESSION_COOKIE_DOMAIN='2559-103-97-165-190.ngrok-free.app'  # 💥 this is the critical fix
+    SESSION_COOKIE_SECURE=True  # Use HTTPS for secure cookies
 )
 
 Session(app)
@@ -37,7 +36,7 @@ Session(app)
 # ------------------------------------------------------------------------------
 # Auth0 Configuration
 # ------------------------------------------------------------------------------
-AUTH0_CALLBACK_URL = 'https://091e-103-249-89-41.ngrok-free.app/callback'
+AUTH0_CALLBACK_URL = 'https://localhost:5000/callback'
 
 app.config.update(
     AUTH0_CLIENT_ID='fqZEkkOW6Ry6n5T94snVDBNT5Plp4FLI',
