@@ -1,9 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import StatCards from './StatCards';
 import EEGInputForm from './EEGInputForm';
+import Login from './auth/Login';
+import Register from './auth/Register';
+import Profile from './auth/Profile';
 import '../style.css';
 
 const App = () => {
@@ -22,15 +25,23 @@ const App = () => {
     localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
 
-
   return (
     <div className="container">
       <Sidebar />
       <div className="main">
         <Header darkMode={darkMode} setDarkMode={setDarkMode} />
         <main className="content">
-          <h1>EEG Prediction Dashboard</h1>
-          <EEGInputForm />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/" element={
+              <>
+                <h1>EEG Prediction Dashboard</h1>
+                <EEGInputForm />
+              </>
+            } />
+          </Routes>
         </main>
       </div>
     </div>
