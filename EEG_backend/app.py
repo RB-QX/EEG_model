@@ -1,10 +1,10 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import numpy as np
 import joblib
 import tensorflow as tf
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="dist", static_url_path="/")
 CORS(app)
 
 # Load model and scaler
@@ -12,9 +12,9 @@ model = tf.keras.models.load_model("../models/cnn_lstm_model_4.h5")
 scaler = joblib.load("../scaler.pkl")
 
 # Prediction route
-@app.route('/')
-def home():
-    return "✅ Flask is running!"
+@app.route("/")
+def serve_react():
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route('/predict', methods=['POST'])
 def predict():

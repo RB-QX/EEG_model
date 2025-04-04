@@ -7,11 +7,16 @@ import EEGInputForm from './EEGInputForm';
 import '../style.css';
 
 const App = () => {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved === "true";
+  });
 
   useEffect(() => {
     document.body.className = darkMode ? 'dark' : '';
+    localStorage.setItem("darkMode", darkMode);
   }, [darkMode]);
+
 
   return (
     <div className="container">
