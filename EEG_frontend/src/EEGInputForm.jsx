@@ -1,15 +1,41 @@
+
 import React, { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import PredictionHistory from './PredictionHistory';
 
 const EEGInputForm = () => {
   const [features, setFeatures] = useState(Array(54).fill(0));
   const [result, setResult] = useState(null);
   const [confidences, setConfidences] = useState(null);
+  const [history, setHistory] = useState([]);
 
   const handleChange = (index, value) => {
-    const newFeatures = [...features];
-    newFeatures[index] = value;
-    setFeatures(newFeatures);
+    const updated = [...features];
+    updated[index] = value;
+    setFeatures(updated);
+  };
+
+  const handleCSVUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target.result.trim();
+      const values = text.split(',').map(Number);
+      if (values.length === 54 && values.every(v => !isNaN(v))) {
+        setFeatures(values);
+      } else {
+        alert("CSV must contain exactly 54 numeric values in a single row.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleReset = () => {
+    setFeatures(Array(54).fill(0));
+    setResult(null);
+    setConfidences(null);
   };
 
   const handleSubmit = async (e) => {
@@ -25,43 +51,65 @@ const EEGInputForm = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+
       const data = await res.json();
       setResult(data.prediction);
       setConfidences(data.confidences || null);
-    } catch (error) {
-      setResult('Error occurred');
+
+      const timestamp = new Date().toLocaleString();
+      setHistory(prev => [...prev, { prediction: data.prediction, timestamp }]);
+
+    } catch (err) {
+      setResult("Prediction failed.");
     }
   };
 
+  const chartData = confidences
+    ? Object.entries(confidences).map(([label, score]) => ({
+        label,
+        confidence: Math.round(score * 100),
+      }))
+    : [];
+
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="form-grid">
+    <div className="eeg-card">
+      <div className="eeg-card-header">
+        <h3>EEG Data Input</h3>
+        <div>
+          <input type="file" accept=".csv" onChange={handleCSVUpload} />
+          <button className="btn small" onClick={handleReset}>🔄 Reset</button>
+        </div>
+      </div>
+      <form className="eeg-grid" onSubmit={handleSubmit}>
         {features.map((val, i) => (
-          <div key={i} className="form-group">
-            <label htmlFor={`feature${i}`}>F{i}</label>
-            <input
-              type="number"
-              id={`feature${i}`}
-              value={val}
-              onChange={(e) => handleChange(i, parseFloat(e.target.value))}
-              required
-            />
-          </div>
+          <input
+            key={i}
+            type="number"
+            value={val}
+            placeholder={`F${i}`}
+            onChange={(e) => handleChange(i, parseFloat(e.target.value))}
+          />
         ))}
-        <button type="submit">Predict</button>
+        <button className="btn primary full" type="submit">⚡ Predict</button>
       </form>
 
-      {result && <h2>Predicted Class: {result}</h2>}
+      {result && <div className="result">Predicted: <strong>{result}</strong></div>}
 
       {confidences && (
-        <BarChart width={500} height={300} data={Object.entries(confidences).map(([label, value]) => ({ label, value }))}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="label" />
-          <YAxis domain={[0, 1]} />
-          <Tooltip />
-          <Bar dataKey="value" fill="#8884d8" />
-        </BarChart>
+        <div style={{ marginTop: '2rem', height: '300px' }}>
+          <h4>Confidence Scores</h4>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData}>
+              <XAxis dataKey="label" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="confidence" fill="#4f46e5" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
+
+      <PredictionHistory history={history} />
     </div>
   );
 };
