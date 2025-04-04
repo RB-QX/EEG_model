@@ -25,7 +25,6 @@ const App = () => {
         <Header darkMode={darkMode} setDarkMode={setDarkMode} />
         <main className="content">
           <h1>EEG Prediction Dashboard</h1>
-          <StatCards />
           <EEGInputForm />
         </main>
       </div>

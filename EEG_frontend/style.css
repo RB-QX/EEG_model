@@ -164,29 +164,5 @@ body.dark {
   margin-top: 1rem;
 }
 
-.sidebar {
-  background: #0f172a;
-  color: white;
-/* Removed duplicate .sidebar definition */
-}
 
-.sidebar h2 {
-  margin: 0 0 20px;
-}
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-.sidebar li {
-  padding: 10px 0;
-  cursor: pointer;
-  opacity: 0.85;
-}
-.sidebar li.active {
-  font-weight: bold;
-  opacity: 1;
-}
-.sidebar footer {
-  font-size: 12px;
-  opacity: 0.5;
-}
+

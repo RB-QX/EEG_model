@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import PredictionHistory from './PredictionHistory';
+import StatCards from './StatCards';
 
 const EEGInputForm = () => {
   const [features, setFeatures] = useState(Array(54).fill(0));
   const [result, setResult] = useState(null);
   const [confidences, setConfidences] = useState(null);
   const [history, setHistory] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [confidencePercent, setConfidencePercent] = useState(0);
+  const [processingTime, setProcessingTime] = useState([]);
 
   // ✅ Load saved data on page load
   useEffect(() => {
@@ -16,8 +20,17 @@ const EEGInputForm = () => {
     const savedFeatures = localStorage.getItem("features");
 
     if (savedResult) setResult(savedResult);
-    if (savedConfidences) setConfidences(JSON.parse(savedConfidences));
-    if (savedHistory) setHistory(JSON.parse(savedHistory));
+    if (savedConfidences) {
+      const parsed = JSON.parse(savedConfidences);
+      setConfidences(parsed);
+      const max = Math.max(...Object.values(parsed));
+      setConfidencePercent(Math.round(max * 100));
+    }
+    if (savedHistory) {
+      const parsed = JSON.parse(savedHistory);
+      setHistory(parsed);
+      setTotal(parsed.length);
+    }
     if (savedFeatures) setFeatures(JSON.parse(savedFeatures));
   }, []);
 
@@ -33,9 +46,22 @@ const EEGInputForm = () => {
     setFeatures(cleared);
     setResult(null);
     setConfidences(null);
+    setConfidencePercent(0);
+    setProcessingTime(0);
     localStorage.removeItem("result");
     localStorage.removeItem("confidences");
     localStorage.removeItem("features");
+  };
+
+  const handleClearAll = () => {
+    setFeatures(Array(54).fill(0));
+    setResult(null);
+    setConfidences(null);
+    setHistory([]);
+    setTotal(0);
+    setConfidencePercent(0);
+    localStorage.clear();
+    window.location.reload();
   };
 
   const handleCSVUpload = (e) => {
@@ -62,6 +88,8 @@ const EEGInputForm = () => {
       payload[`feature${i}`] = val;
     });
 
+    const start = performance.now();
+
     try {
       const res = await fetch('/predict', {
         method: 'POST',
@@ -70,20 +98,41 @@ const EEGInputForm = () => {
       });
 
       const data = await res.json();
+      const end = performance.now();
+      const timeTaken = Math.round(end - start);
+
       setResult(data.prediction);
       setConfidences(data.confidences || null);
+      setProcessingTime(timeTaken);
+      setConfidencePercent(
+        Math.round(Math.max(...Object.values(data.confidences || {})) * 100)
+      );
 
       localStorage.setItem("result", data.prediction);
       localStorage.setItem("confidences", JSON.stringify(data.confidences || {}));
 
       const timestamp = new Date().toLocaleString();
-      const newEntry = { prediction: data.prediction, timestamp };
+      const newEntry = { 
+        prediction: data.prediction, 
+        timestamp,
+        confidences: data.confidences 
+      };
       const updatedHistory = [...history, newEntry];
       setHistory(updatedHistory);
+      setTotal(updatedHistory.length);
       localStorage.setItem("history", JSON.stringify(updatedHistory));
 
     } catch (err) {
       setResult("Prediction failed.");
+    }
+  };
+
+  const restoreFromHistory = (entry) => {
+    setResult(entry.prediction);
+    setConfidences(entry.confidences || null);
+    if (entry.confidences) {
+      const max = Math.max(...Object.values(entry.confidences));
+      setConfidencePercent(Math.round(max * 100));
     }
   };
 
@@ -94,50 +143,59 @@ const EEGInputForm = () => {
       }))
     : [];
 
-  return (
-    <div className="eeg-card">
-      <div className="eeg-card-header">
-        <h3>EEG Data Input</h3>
-        <div className="btn-group">
-          <input type="file" accept=".csv" onChange={handleCSVUpload} />
-          <button className="btn small" onClick={handleReset}>🔄 Reset</button>
+    return (
+      <div className="eeg-card">
+       <StatCards
+        total={total}
+        confidencePercent={confidencePercent}
+        processingTime={processingTime}
+      />
+  
+        <div className="eeg-card-header">
+          <h3>EEG Data Input</h3>
+          <div className="btn-group">
+            <input type="file" accept=".csv" onChange={handleCSVUpload} />
+            <button className="btn small" onClick={handleReset}>🔄 Reset Inputs</button>
+            <button className="btn small danger" onClick={handleClearAll}>🧹 Clear All</button>
+          </div>
         </div>
-      </div>
-
-      <form className="eeg-grid" onSubmit={handleSubmit}>
-        {features.map((val, i) => (
-          <input
-            key={i}
-            type="number"
-            value={val}
-            placeholder={`F${i}`}
-            onChange={(e) => handleChange(i, parseFloat(e.target.value))}
-          />
-        ))}
+  
+        <form className="eeg-grid" onSubmit={handleSubmit}>
+          {features.map((val, i) => (
+            <input
+              key={i}
+              type="number"
+              value={val}
+              placeholder={`F${i}`}
+              onChange={(e) => handleChange(i, parseFloat(e.target.value))}
+            />
+          ))}
+        </form>
+  
         <div className="predict-container">
-          <button className="btn primary" type="submit">⚡ Predict</button>
+          <button className="btn primary" onClick={handleSubmit}>⚡ Predict</button>
         </div>
-      </form>
-
-      {result && <div className="result">Predicted: <strong>{result}</strong></div>}
-
-      {confidences && (
-        <div style={{ marginTop: '2rem', height: '300px' }}>
-          <h4>Confidence Scores</h4>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <XAxis dataKey="label" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="confidence" fill="#4f46e5" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-
-      <PredictionHistory history={history} />
-    </div>
-  );
-};
-
-export default EEGInputForm;
+  
+        {result && <div className="result">Predicted: <strong>{result}</strong></div>}
+  
+        {confidences && (
+          <div style={{ marginTop: '2rem', height: '300px' }}>
+            <h4>Confidence Scores</h4>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
+                <XAxis dataKey="label" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="confidence" fill="#4f46e5" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+  
+        <PredictionHistory history={history} onRestore={restoreFromHistory} />
+      </div>
+    );
+  };
+  
+  export default EEGInputForm;
+  

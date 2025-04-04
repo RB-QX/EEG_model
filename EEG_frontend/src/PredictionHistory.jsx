@@ -10,7 +10,7 @@ const PredictionHistory = ({ history }) => {
       ) : (
         <ul className="history-list">
           {history.map((entry, index) => (
-            <li key={index}>
+            <li key={index} onClick={() => onRestore(entry)} style={{ cursor: 'pointer' }}>
               🧠 <strong>{entry.prediction}</strong> — <span>{entry.timestamp}</span>
             </li>
           ))}
