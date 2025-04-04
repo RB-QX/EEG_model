@@ -7,6 +7,7 @@ import EEGInputForm from './EEGInputForm';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import Profile from './auth/Profile';
+import PrivateRoute from './PrivateRoute';
 import '../style.css';
 
 const App = () => {
@@ -34,7 +35,22 @@ const App = () => {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route
+              path="/profile"
+              element={
+                <PrivateRoute>
+                  <Profile />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/input"
+              element={
+                <PrivateRoute>
+                  <EEGInputForm />
+                </PrivateRoute>
+              }
+            />
             <Route path="/" element={
               <>
                 <h1>EEG Prediction Dashboard</h1>

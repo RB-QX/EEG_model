@@ -6,14 +6,26 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email || !password) return alert("Please fill all fields.");
+    try {
+      const res = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-    // Simulate login
-    const user = { email };
-    localStorage.setItem("user", JSON.stringify(user));
-    navigate('/profile');
+      const data = await res.json();
+      if (!res.ok) return alert(data.error);
+
+      // Save token + user info
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify({ name: data.name, email: data.email }));
+
+      navigate('/profile');
+    } catch (err) {
+      alert('Login failed. Server error.');
+    }
   };
 
   return (

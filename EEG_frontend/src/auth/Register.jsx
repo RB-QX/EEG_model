@@ -7,13 +7,23 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (!email || !password || !name) return alert("All fields required.");
+    try {
+      const res = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, name, password })
+      });
 
-    const user = { email, name };
-    localStorage.setItem("user", JSON.stringify(user));
-    navigate('/profile');
+      const data = await res.json();
+      if (!res.ok) return alert(data.error);
+
+      alert('Registration successful!');
+      navigate('/login');
+    } catch (err) {
+      alert('Registration failed. Server error.');
+    }
   };
 
   return (
