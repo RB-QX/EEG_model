@@ -60,8 +60,12 @@ const EEGInputForm = () => {
     setHistory([]);
     setTotal(0);
     setConfidencePercent(0);
-    localStorage.clear();
-    window.location.reload();
+    setProcessingTimes([]);
+
+    const darkMode = localStorage.getItem("darkMode"); // Preserve before clear
+    localStorage.clear();                              // Clear all
+    if (darkMode) localStorage.setItem("darkMode", darkMode); // Restore dark mode
+    
   };
 
   const handleCSVUpload = (e) => {
@@ -168,12 +172,23 @@ const EEGInputForm = () => {
               value={val}
               placeholder={`F${i}`}
               onChange={(e) => handleChange(i, parseFloat(e.target.value))}
+              style={{ transition: 'all 0.3s ease', transform: 'scale(1)' }}
+              onFocus={(e) => (e.target.style.transform = 'scale(1.05)')}
+              onBlur={(e) => (e.target.style.transform = 'scale(1)')}
             />
           ))}
         </form>
   
         <div className="predict-container">
-          <button className="btn primary" onClick={handleSubmit}>⚡ Predict</button>
+          <button
+            className="btn primary"
+            onClick={handleSubmit}
+            style={{ transition: 'background-color 0.3s ease, transform 0.3s ease' }}
+            onMouseEnter={(e) => (e.target.style.transform = 'scale(1.1)')}
+            onMouseLeave={(e) => (e.target.style.transform = 'scale(1)')}
+          >
+            ⚡ Predict
+          </button>
         </div>
   
         {result && <div className="result">Predicted: <strong>{result}</strong></div>}
@@ -198,4 +213,4 @@ const EEGInputForm = () => {
   };
   
   export default EEGInputForm;
-  
+

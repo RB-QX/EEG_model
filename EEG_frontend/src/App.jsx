@@ -8,9 +8,14 @@ import '../style.css';
 
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => {
-    const saved = localStorage.getItem("darkMode");
-    return saved === "true";
+    return localStorage.getItem("darkMode") === "true";
   });
+  
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem("darkMode", newMode);
+  };
 
   useEffect(() => {
     document.body.className = darkMode ? 'dark' : '';

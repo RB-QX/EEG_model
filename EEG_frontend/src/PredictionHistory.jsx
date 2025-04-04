@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const PredictionHistory = ({ history }) => {
@@ -10,7 +9,16 @@ const PredictionHistory = ({ history }) => {
       ) : (
         <ul className="history-list">
           {history.map((entry, index) => (
-            <li key={index} onClick={() => onRestore(entry)} style={{ cursor: 'pointer' }}>
+            <li
+              key={index}
+              onClick={() => onRestore(entry)}
+              style={{
+                cursor: 'pointer',
+                animation: `slideIn 0.3s ease ${index * 0.1}s`,
+                animationFillMode: 'forwards',
+                opacity: 0,
+              }}
+            >
               🧠 <strong>{entry.prediction}</strong> — <span>{entry.timestamp}</span>
             </li>
           ))}
