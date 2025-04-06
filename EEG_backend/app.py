@@ -1,20 +1,42 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, abort
 from flask_cors import CORS
+from auth_routes import auth  # <-- updated import
+from flask_pymongo import PyMongo
+import os
 import numpy as np
 import joblib
 import tensorflow as tf
 
+# Serve frontend from React dist folder
 app = Flask(__name__, static_folder="dist", static_url_path="/")
 CORS(app)
 
-# Load model and scaler
+# MongoDB + JWT config
+app.config['MONGO_URI'] = os.getenv("MONGO_URI", "mongodb+srv://U9hpfSjwdZH9a78L:<db_password>@cluster0.mu6avf7.mongodb.net/")
+app.config['JWT_SECRET'] = os.getenv("JWT_SECRET", "supersecretkey")
+mongo = PyMongo(app)
+app.mongo = mongo
+
+# Register auth blueprint
+app.register_blueprint(auth)
+
+# Load ML model and scaler
 model = tf.keras.models.load_model("../models/cnn_lstm_model_4.h5")
 scaler = joblib.load("../scaler.pkl")
 
-# Prediction route
 @app.route("/")
 def serve_react():
-    return send_from_directory(app.static_folder, "index.html")
+    if os.path.exists(os.path.join(app.static_folder, "index.html")):
+        return send_from_directory(app.static_folder, "index.html")
+    else:
+        abort(404, description="React frontend not built or index.html missing.")
+
+@app.errorhandler(404)
+def not_found(e):
+    if os.path.exists(os.path.join(app.static_folder, "index.html")):
+        return send_from_directory(app.static_folder, "index.html")
+    else:
+        return jsonify({"error": "Resource not found"}), 404
 
 @app.route('/predict', methods=['POST'])
 def predict():
