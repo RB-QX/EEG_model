@@ -9,7 +9,7 @@ import Register from './auth/Register';
 import Profile from './auth/Profile';
 import PrivateRoute from './PrivateRoute';
 import '../style.css';
-
+import Login_Signup from './Login_SignUp/Login_SignUp';
 const App = () => {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "true";
@@ -28,6 +28,7 @@ const App = () => {
 
   return (
     <div className="container">
+      <Login_Signup/>
       <Sidebar />
       <div className="main">
         <Header darkMode={darkMode} setDarkMode={setDarkMode} />
