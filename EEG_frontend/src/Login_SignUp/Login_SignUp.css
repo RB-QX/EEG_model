@@ -1,28 +1,62 @@
 body {
     margin: 0;
-    padding: auto;
     font-family: 'Segoe UI', sans-serif;
-    height : 100vh;
-    background: linear-gradient(#2A00B7,#42006C);
+    background: linear-gradient(#2A00B7, #42006C);
     color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
-
-code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-        monospace;
-}
-
-.container{
+.page-wrapper {
     display: flex;
     flex-direction: column;
-    margin: auto;
-    margin-top : 200px;
-    width: 600px;
-    background: #fff;
-    padding-bottom : 30px;
+    align-items: center;
+    width: 100%;
 }
-
-.header{
+.logo-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.logo-img {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 10px;
+    animation: bounceGlow 2s ease-in-out infinite;
+}
+.app-title {
+    font-size: 26px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 1px;
+}
+.page-subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    color: #eee;
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 20px;
+    max-width: 360px;
+}
+.subtitle-wrapper {
+    animation: fadeIn 0.5s ease-in-out;
+}
+.container {
+    animation: slideFadeForm 0.6s ease;
+    transform-origin: top center;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    padding-bottom: 30px;
+    border-radius: 10px;
+    width: 600px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+.header {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -30,43 +64,37 @@ code {
     width: 100%;
     margin-top: 30px;
 }
-
-.text{
+.text {
     color: #3c009d;
     font-size: 48px;
     font-weight: 700;
 }
-
-.underline{
+.underline {
     width: 61px;
     height: 6px;
     background: #3c009d;
     border-radius: 9px;
 }
-
-.inputs{
-    margin-top: 55px;
+.inputs {
+    margin-top: 40px;
     display: flex;
     flex-direction: column;
     gap: 25px;
 }
-
-.input{
-    display:flex;
-    align-items : center;
+.input {
+    display: flex;
+    align-items: center;
     margin: auto;
     width: 480px;
     height: 80px;
     background: #eaeaea;
     border-radius: 6px;
-
+    animation: fadeSlideIn 0.6s ease-in-out;
 }
-
-.input img{
+.input img {
     margin: 0px 30px;
 }
-
-.input input{
+.input input {
     height: 50px;
     width: 400px;
     background: transparent;
@@ -74,42 +102,217 @@ code {
     outline: none;
     color: #797979;
     font-size: 19px;
-
 }
-
-.forgot-password{
+.forgot-password {
     padding-left: 62px;
     margin-top: 27px;
     color: #797979;
     font-size: 18px;
 }
-
-.forgot-password span{
+.forgot-password span {
     color: #4c00b4;
     cursor: pointer;
 }
-
-.submit-container{
-    display: flex;
-    gap: 30px;
-    margin: 60% auto;
-}
-
-.submit{
+.submit-container {
     display: flex;
     justify-content: center;
-    align-items: centre;
+    gap: 30px;
+    margin-top: 40px;
+}
+.submit, .gray {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 220px;
     height: 59px;
-    color: #fff;
-    background: #4c00b4;
     border-radius: 50px;
     font-size: 19px;
     font-weight: 700;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
-
-.gray{
+.submit {
+    background: #4c00b4;
+    color: #fff;
+}
+.gray {
     background: #eaeaea;
     color: #676767;
+}
+.submit:hover, .gray:hover {
+    transform: scale(1.05);
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideFadeForm {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes bounceGlow {
+    0%, 100% { transform: translateY(0); box-shadow: 0 0 0px rgba(255,255,255,0.4); }
+    50% { transform: translateY(-5px); box-shadow: 0 0 12px rgba(255,255,255,0.7); }
+}
+
+/* Container setup */
+.login-signup-container {
+    height: 100vh;
+    background: linear-gradient(to bottom, #3204af, #440257);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Form box with animation */
+.form-box {
+    background: #fff;
+    padding: 3rem 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    animation: slideIn 0.8s ease forwards;
+    transform: translateY(50px);
+    opacity: 0;
+}
+
+/* Slide-in animation */
+@keyframes slideIn {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Logo styles with bounce and glow */
+.logo-container {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    animation: bounce 2s infinite;
+    color: #5100ff;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+        text-shadow: 0 0 6px #bbb;
+    }
+    50% {
+        transform: translateY(-8px);
+        text-shadow: 0 0 12px #5100ff;
+    }
+}
+
+/* Title heading */
+.title {
+    text-align: center;
+    color: #5100ff;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    font-weight: bold;
+    text-shadow: 0 0 2px #ccc;
+    position: relative;
+}
+
+.title::after {
+    content: "";
+    display: block;
+    height: 3px;
+    width: 40px;
+    background-color: #5100ff;
+    margin: 0.5rem auto 0;
+    border-radius: 5px;
+}
+
+/* Input field styling */
+.input-group {
+    margin-bottom: 1.2rem;
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background: #eee;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    background: #f5f5f5;
+    box-shadow: 0 0 0 2px #5100ff4d;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Button groups */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+}
+
+.toggle-btn,
+.submit-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.toggle-btn {
+    background-color: #e6e6e6;
+    color: #5100ff;
+}
+
+.toggle-btn.active {
+    background-color: #5100ff;
+    color: #fff;
+}
+
+.submit-btn {
+    background-color: #5100ff;
+    color: white;
+}
+
+.submit-btn:hover,
+.toggle-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+/* Forgot password text */
+.forgot-text {
+    font-size: 0.85rem;
+    color: #333;
+    margin-top: 1.2rem;
+    text-align: center;
+}
+
+.forgot-text a {
+    color: #5100ff;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.forgot-text a:hover {
+    text-decoration: underline;
 }
